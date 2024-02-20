@@ -1,1 +1,2 @@
-Temp sensor
+# TAIKAHomeControl
+Home automatization
