@@ -1,0 +1,4 @@
+ThermostatJson:["Nappali","Tetőtér"]
+ThermostatJsonCollection1:"Nappali":[1,283,57,38,39,40],
+ThermostatJsonCollection2:"Tetőtér":[2,298,58,43,42,41],"Bal első szoba":[3,298,59,44,45,46],"Jobb első szoba":[4,298,60,49,48,47],"Bal hátsó szoba":[5,298,61,55,54,53],"Jobb hátsó szoba":[6,298,62,50,51,52]
+ThermostatJsonCollection3:"Általános":[0,63,37]
