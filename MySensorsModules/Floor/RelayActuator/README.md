@@ -3,4 +3,4 @@ Home automatization
 
 Relé vezérlő
 
-![A vezérlő NYÁK terve](./images/RelayModulePCB.png"Title")
+![A vezérlő NYÁK terve](./images/RelayModulePCB.png)
