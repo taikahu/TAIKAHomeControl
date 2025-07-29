@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TAIKA Home Control (Fűtés áttekintő)</title>
+    <link href='https://fonts.googleapis.com/css?family=Orbitron:700' rel='stylesheet' type='text/css'>
+    <link href="https://fonts.googleapis.com/css2?family=Alfa+Slab+One&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="./css/heater.css">
+</head>
+<body  style="border:none;margin:0px; background-color: black;overflow:hidden;">
+   <div style="background-color: #2452c8; height: 101vh; width: 101vw;" id="screen">
+    <div class="torzs">
+        <div class="temp" id="room1" style="top: 110px;left:79px;">--.-C°</div>
+        <div class="temp" id="room2" style="top: 110px;left:289px;">--.-C°</div>
+        <div class="temp" id="rooma" style="top: 110px;left:654px;">--.-C°</div>
+        <div class="temp" id="room3" style="top: 110px;left:974px;">--.-C°</div>
+        <div class="temp" id="room4" style="top: 110px;left:1184px;">--.-C°</div>
+        <div class="temp" id="roomb" style="top: 410px;left:304px;">--.-C°</div>
+        <div class="temp" id="rooml" style="top: 570px;left:1084px;">--.-C°</div>
+
+        <div class="temp" id="boilerf" style="top: 570px;left:100px;">--.-C°</div>
+        <div class="temp" id="boilerb" style="top: 620px;left:180px;">--.-C°</div>
+        <div class="temp" id="atticf" style="top: 260px;left:505px;">--.-C°</div>
+        <div class="temp" id="atticb" style="top: 320px;left:540px;">--.-C°</div>
+        <div class="temp" id="floorf" style="top: 380px;left:900px;">--.-C°</div>
+        <div class="temp" id="floorb" style="top: 520px;left:820px;">--.-C°</div>
+
+        <div class="valve1 valveOff" id="floorv" style="top: 419px;left:607px;"></div>
+        <div class="valve2 valveOff" id="roomav" style="top: 356px;left:484px;"></div>
+       
+        <div class="valve1 valveOff" id="room1v" style="top: 65px;left:44px;"></div>
+        <div class="valve1 valveOff" id="room2v" style="top: 65px;left:418px;"></div>
+        <div class="valve1 valveOff" id="room3v"  style="top: 65px;left:938px;"></div>
+        <div class="valve1 valveOff" id="room4v" style="top: 65px;left:1316px;"></div>
+
+        
+        <div class="valve1 valveOff" id="atticv"style="top: 65px;left:618px;"></div>
+        <div class="valve2 valveOff" id="roombv" style="top: 585px;left:406px;"></div>
+
+        <div class="pump pumpOff" id="pump" style="top: 409px;left:816px;"></div>
+        <div class="flame flameOn" id="flame" ></div>
+
+        <div class="temp_alap" id="rooma1" style="top: 170px;left:149px;">--.1C°</div>
+        <div class="temp_alap" id="rooma2" style="top: 170px;left:359px;">--.2C°</div>
+        <div class="temp_alap" id="roomaa" style="top: 170px;left:714px;">--.3C°</div>
+        <div class="temp_alap" id="rooma3" style="top: 170px;left:1034px;">--.4C°</div>
+        <div class="temp_alap" id="rooma4" style="top: 170px;left:1244px;">--.5C°</div>
+        <div class="temp_alap" id="roomal" style="top: 630px;left:1214px;">--.6C°</div>
+
+        <div class="temp_mode" id="mode" style="top: 400px;left:141px;">Ki</div>
+
+        <div class="caption" style="top: 35px;left:30px;">Szoba 1</div>
+        <div class="caption" style="top: 35px;left:270px;">Szoba 2</div>
+        <div class="caption" style="top: 35px;left:600px;">Tetőtér</div>
+        <div class="caption" style="top: 35px;left:920px;">Szoba 3</div>
+        <div class="caption" style="top: 35px;left:1165px;">Szoba 4</div>
+        <div class="caption" style="top: 300px;left:135px;">Kazán</div>
+        <div class="caption" style="top: 275px;left:300px;">Fürdő</div>
+        <div class="caption" style="top: 485px;left:1090px;">Nappali padlófűtés</div>
+
+        <div class="raspberry" style="top: 285px;left:1050px;">
+            <img src="./images/raspberry.png" class="rapberry_icon" alt="">
+            <div class="temp" id="raspberry" style="top: 20px;left:80px;"></div>
+            <div class="temp_alap" id="rbsp" style="top: 70px;left:160px;">--.-C°</div>
+            <div class="vent_off" style="top: 15px;left:230px;"></div>
+        </div>
+
+    </div>
+    <div class="header" onclick="openFullscreen();">Fűtés áttekintő</div>
+    
+</div>
+</body>
+</html>
+
+<script type="text/javascript" charset="utf-8">
+    function RefreshData()
+    {
+        clearInterval(refreshTimer);
+        var jurl=domoticzurl+"/json.htm?type=command&param=getdevices&plan="+roomplan+"&jsoncallback=?";
+        const xhr = new XMLHttpRequest();
+        xhr.open("GET", jurl);
+        xhr.send();
+        xhr.responseType = "json";
+        xhr.onload = () => {
+            if (xhr.readyState == 4 && xhr.status == 200) {
+                const data = xhr.response;
+                console.log(data);
+                if (typeof data.result != 'undefined') {
+                    document.getElementById("roomal").textContent="--.-C°";
+                    document.getElementById("roomaa").textContent="--.-C°";
+                    document.getElementById("rooma1").textContent="--.-C°";
+                    document.getElementById("rooma2").textContent="--.-C°";
+                    document.getElementById("rooma3").textContent="--.-C°";
+                    document.getElementById("rooma4").textContent="--.-C°";
+                    data.result.forEach(function(item){
+                    for( var ii = 0, len = PageArray.length; ii < len; ii++ ) {
+                        if( PageArray[ii][0] === item.idx ) {		// Domoticz idx number
+                            var vtype=	PageArray[ii][1]; 		// Domotitcz type (like Temp, Humidity)
+                            var vlabel=	PageArray[ii][2];			// cell number from HTML layout
+                            var vdesc=	PageArray[ii][3];			// description 
+                            var vattr=	PageArray[ii][4];			// extra css attributes
+                            var vdata=	item[vtype];				// current value
+                            if (typeof vdata == 'undefined') {
+                                vdata="??";
+                            } else {
+                                // remove too much text
+                                vdata=new String(vdata).split("Watt",1)[0];
+                                vdata=new String(vdata).split("kWh",1)[0];
+                            }
+                            switch(vtype){
+                            case "Status":
+                                document.getElementById(vlabel).classList.remove(vattr+'On');
+                                document.getElementById(vlabel).classList.remove(vattr+'Off');
+                                document.getElementById(vlabel).classList.add(vattr+vdata);
+                                break;
+                           case "Level":
+                                termostatMode=vdata;
+                                document.getElementById(vlabel).textContent=item["Data"];
+                                break;
+                            case "SetPoint":
+                                if (PageArray[ii][5]==termostatMode){
+                                    document.getElementById(vlabel).textContent=vdata+vattr;
+                                }
+                                break;                                
+                            default:
+                                    document.getElementById(vlabel).textContent=vdata+vattr;
+                            }
+                            
+
+                        }
+                    }
+                });
+            }
+            } else {
+                console.log(`Error: ${xhr.status}`);
+            }
+        };
+
+/*
+        function(data) {
+            if (typeof data.result != 'undefined') {
+                
+                $.each(data.result, function(i,item){
+                    for( var ii = 0, len = $.PageArray.length; ii < len; ii++ ) {
+                        if( $.PageArray[ii][0] === item.idx ) {		// Domoticz idx number
+                            var vtype=	$.PageArray[ii][1]; 		// Domotitcz type (like Temp, Humidity)
+                            var vlabel=	$.PageArray[ii][2];			// cell number from HTML layout
+                            var vdesc=	$.PageArray[ii][3];			// description 
+                            var vattr=	$.PageArray[ii][4];			// extra css attributes
+                            var vdata=	item[vtype];				// current value
+                            if (typeof vdata == 'undefined') {
+                                vdata="??";
+                            } else {
+                                // remove too much text
+                                vdata=new String(vdata).split("Watt",1)[0];
+                                vdata=new String(vdata).split("kWh",1)[0];
+                            }
+                            if (vtype=="Status"){
+                                document.getElementById(vlabel).classList.remove(vattr+'On');
+                                document.getElementById(vlabel).classList.remove(vattr+'Off');
+                                document.getElementById(vlabel).classList.add(vattr+vdata);
+                            } else {
+                                document.getElementById(vlabel).textContent=vdata+vattr;
+                            }
+                            
+
+                        }
+                    }
+                });
+            }
+        });*/
+        refreshTimer = setInterval(RefreshData, 2000);
+    }
+    
+    // ############################################################################################################
+    // #### vvvvv   USER VALUES below vvvvv   #######
+    // ############################################################################################################
+    
+
+        var roomplan=8;   	// define roomplan in Domoticz and create items below.
+        var domoticzurl="http://192.168.0.200:8080";
+        var refreshTimer;
+        var termostatMode=0;
+        //format: idx, value, label, description, [override css], [alarm value]
+        var PageArray = [
+            ['403',	'Temp',			'room1',	'Szoba1 hőmérséklet','C°'],
+            ['404',	'Temp',	    	'room2',	'Szoba2 hőmérséklet','C°'],
+            ['407',	'Temp',	        'rooma',	'Tetőtér hőmérséklet','C°'],
+            ['405',	'Temp',	        'room3',	'Szoba3 hőmérséklet','C°'],
+            ['406',	'Temp',			'room4',	'Szoba4 hőmérséklet','C°'],
+            ['0',	'Temp',	    	'roomb',	'Fürdőszoba hőmérséklet)'],'C°',
+            ['408',	'Temp',	    	'rooml',	'Nappali hőmérséklet','C°'],
+            ['329',	'Temp',	        'boilerf',	'Kazán előremenő hőmérséklet','C°'],
+            ['334',	'Temp',			'boilerb',	'Kazán visszatérő hőmérséklet','C°'],
+            ['331',	'Temp',	    	'atticf',	'Tetőtér előremenő hőmérséklet','C°'],
+            ['334',	'Temp',			'atticb',	'Tetőtér visszatérő hőmérséklet','C°'],
+            ['330',	'Temp',	    	'floorf',	'Padlúfűtés előremenő hőmérséklet','C°'],
+            ['333',	'Temp',	        'floorb',	'Padlúfűtés visszatérő hőmérséklet','C°'],
+            ['57',	'Status',		'floorv',	'Padlófűtés szelep','valve'],
+            ['58',	'Status',		'roomav',	'Tetőtér közös szelep','valve'],
+            ['392',	'Status',		'room1v',	'Szoba1 radiátor szelep','valve'],
+            ['394',	'Status',		'room2v',	'Szoba2 radiátor szelep','valve'],
+            ['395',	'Status',		'room3v',	'Szoba3 radiátor szelep','valve'],
+            ['397',	'Status',		'room4v',	'Szoba4 radiátor szelep','valve'],
+            ['396',	'Status',		'atticv',	'Tetőtér radiátor szelep','valve'],
+            ['0',	'Status',		'roombv',	'Fürdőszoba radiátor szelep','valve'],
+            ['0',	'Status',		'pump',	    'Padlúfűtés keringető szivattyú','pump'],
+            ['63',	'Status',		'flame',	'Kazán státusza','flame'],
+            ['37',	'Level',		'mode',	    'Termosztát mód','flame'],
+            ['38',	'SetPoint',	    'roomal',	'Nappali alapérték (Mappal)','C°',10],
+            ['39',	'SetPoint',	    'roomal',	'Nappali alapérték (Éjszaka)','C°',20],
+            ['40',	'SetPoint',	    'roomal',	'Nappali alapérték (Távol)','C°',30],
+            ['43',	'SetPoint',	    'roomaa',	'Tetőtér alapérték (Mappal)','C°',10],
+            ['42',	'SetPoint',	    'roomaa',	'Tetőtér alapérték (Éjszaka)','C°',20],
+            ['41',	'SetPoint',	    'roomaa',	'Tetőtér alapérték (Távol)','C°',30],
+            ['44',	'SetPoint',	    'rooma1',	'Szoba1 alapérték (Mappal)','C°',10],
+            ['45',	'SetPoint',	    'rooma1',	'Szoba1 alapérték (Éjszaka)','C°',20],
+            ['46',	'SetPoint',	    'rooma1',	'Szoba1 alapérték (Távol)','C°',30],
+            ['55',	'SetPoint',	    'rooma4',	'Szoba4 alapérték (Mappal)','C°',10],
+            ['54',	'SetPoint',	    'rooma4',	'Szoba4 alapérték (Éjszaka)','C°',20],
+            ['53',	'SetPoint',	    'rooma4',	'Szoba4 alapérték (Távol)','C°',30],
+            ['50',	'SetPoint',	    'rooma3',	'Szoba3 alapérték (Mappal)','C°',10],
+            ['51',	'SetPoint',	    'rooma3',	'Szoba3 alapérték (Éjszaka)','C°',20],
+            ['52',	'SetPoint',	    'rooma3',	'Szoba3 alapérték (Távol)','C°',30],
+            ['49',	'SetPoint',	    'rooma2',	'Szoba2 alapérték (Mappal)','C°',10],
+            ['48',	'SetPoint',	    'rooma2',	'Szoba2 alapérték (Éjszaka)','C°',20],
+            ['47',	'SetPoint',	    'rooma2',	'Szoba2 alapérték (Távol)','C°',30],
+            ['315',	'Temp',	        'raspberry','Domoticz szerver','C°'],
+            ['384',	'SetPoint',	 'rbsp',     'Domoticz szerver Setpoint','C°',0],
+            ['384',	'SetPoint',	 'rbsp',     'Domoticz szerver Setpoint','C°',10],
+            ['384',	'SetPoint',	 'rbsp',     'Domoticz szerver Setpoint','C°',20],
+            ['384',	'SetPoint',	 'rbsp',     'Domoticz szerver Setpoint','C°',30],
+            ['385',	'Status',	 'screen',     'Domoticz szerver Setpoint','screen_',30]
+        ];
+    
+    // ############################################################################################################
+    // #### ^^^^^   USER VALUES above ^^^^^   #######
+    // ############################################################################################################
+    
+    
+        RefreshData();
+ 
+        
+function openFullscreen() {
+    var elem = document.body;
+  if (elem.requestFullscreen) {
+    elem.requestFullscreen();
+  } else if (elem.webkitRequestFullscreen) { /* Safari */
+    elem.webkitRequestFullscreen();
+  } else if (elem.msRequestFullscreen) { /* IE11 */
+    elem.msRequestFullscreen();
+  }
+  document.getElementById("fullscreen").style.display = "none";
+}
+    
+        
+    </script>
+    
+    </body>
+    </html>
+    

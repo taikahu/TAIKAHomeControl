@@ -31,7 +31,7 @@
 
 // Enable debug prints to serial monitor
 #define MY_DEBUG 
-#define MY_RF24_CHANNEL (120) //Udvar
+#define MY_RF24_CHANNEL (122) //Tetőtér
 
 // Enable and select radio type attached
 #define MY_RADIO_RF24
@@ -46,8 +46,8 @@
 #define RELAY_PIN  4  // Arduino Digital I/O pin number for relay 
 #define BUTTON_PIN  3  // Arduino Digital I/O pin number for button 
 #define CHILD_ID 1   // Id of the sensor child
-#define RELAY_ON 1
-#define RELAY_OFF 0
+#define RELAY_ON 0
+#define RELAY_OFF 1
 
 Bounce debouncer = Bounce(); 
 int oldValue=0;
@@ -78,7 +78,7 @@ void setup()
 
 void presentation()  {
   // Send the sketch version information to the gateway and Controller
-  sendSketchInfo("Xmas light", "1.0");
+  sendSketchInfo("Radiator Valve", "1.0");
 
   // Register all sensors to gw (they will be created as child devices)
   present(CHILD_ID, S_LIGHT);

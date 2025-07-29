@@ -1,0 +1,88 @@
+.header{
+    color: white; 
+    font-size: 40px;
+    position: relative;
+    top: 5px;
+    left: 10px;
+    width: 200px;
+    font-family: "Poppins", serif;
+    font-weight: 400;
+    font-style: normal;
+}
+.PostBoxTable{
+    border: solid 2px white;
+    width: 600px;
+    height: 700px;
+    padding: 0%;
+    position:absolute; 
+    top:50%; 
+    left:50%;
+    transform: translate(-50%,-50%);
+}
+.PostBoxCell60x60{
+    border: solid 2px white;
+    width: 300px;
+    height: 300px;
+    vertical-align: top;
+    border-radius: 9px;
+}
+
+.PostBoxCell30x60{
+    border: solid 2px white;
+    width: 300px;
+    height: 150px;
+    border-radius: 9px;
+}
+
+.PostBoxCell90x60{
+    border: solid 2px white;
+    width: 300px;
+    height: 450px;
+    border-radius: 9px;
+}
+.Camera{
+    border: solid 2px white;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    position: relative;
+    top: 20%;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.ButtonBox{
+    border: solid 2px white;
+    width: 280px;
+    height: 120px;
+    border-radius: 8px;
+    position: relative; 
+    top: 30%;
+    left:50%;
+    transform: translate(-50%);
+}
+.ButtonTitle{
+    color: white; 
+    font-size: 22px;
+    font-family: "Poppins", serif;
+    font-weight: 400;
+}
+
+.ButtonFace{
+    border: solid 2px rgb(255, 255, 255);
+    background-color: rgb(0, 0, 255);
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+}
+
+.ButtonBlue{
+    background-color: rgb(0, 0, 255); 
+}
+.ButtonRed{
+    background-color: rgb(255, 0, 0); 
+}
+
+.ButtonGreen{
+    background-color: rgb(1, 80, 1); 
+}

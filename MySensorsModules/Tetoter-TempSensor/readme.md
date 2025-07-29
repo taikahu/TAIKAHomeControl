@@ -1,0 +1,2 @@
+# TAIKAHomeControl
+Home automatization

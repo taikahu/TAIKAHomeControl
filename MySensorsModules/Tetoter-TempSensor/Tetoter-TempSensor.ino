@@ -1,7 +1,7 @@
 
 // Enable debug prints
 #define MY_DEBUG
-
+#define MY_RF24_CHANNEL (122) //Tetőtér
 // Enable and select radio type attached 
 #define MY_RADIO_RF24
 //#define MY_RADIO_RFM69
@@ -26,11 +26,13 @@ static const uint64_t UPDATE_INTERVAL = 60000;
 // timestamp of the last update doesn't show something like 3 hours in the unlikely case, that
 // the value didn't change since;
 // i.e. the sensor would force sending an update every UPDATE_INTERVAL*FORCE_UPDATE_N_READS [ms]
+
+//"Tetőtér":[2,378,58,43,42,41],"Bal első szoba":[3,378,59,44,45,46],"Jobb első szoba":[4,378,60,49,48,47],"Bal hátsó szoba":[5,378,61,55,54,53],"Jobb hátsó szoba":[6,378,62,50,51,52]
 static const uint8_t FORCE_UPDATE_N_READS = 10;
 
 #define CHILD_ID_HUM 0
 #define CHILD_ID_TEMP 1
-
+#define DHTTYPE DHT22
 
 float lastTemp;
 float lastHum;
@@ -40,13 +42,13 @@ bool metric = true;
 int oldBatteryPcnt = 0;
 MyMessage msgHum(CHILD_ID_HUM, V_HUM);
 MyMessage msgTemp(CHILD_ID_TEMP, V_TEMP);
-DHT dht;
+DHT dht(DHT_DATA_PIN, DHTTYPE);
 
 
 void presentation()  
 { 
   // Send the sketch version information to the gateway
-  sendSketchInfo("TemperatureAndHumidity", "1.2");
+  sendSketchInfo("TemperatureAndHumidityNo3", "1.2");
 
   // Register all sensors to gw (they will be created as child devices)
   present(CHILD_ID_HUM, S_HUM);
@@ -59,24 +61,19 @@ void presentation()
 void setup()
 {
       // use the 1.1 V internal reference
+  dht.begin();
 
-  dht.setup(DHT_DATA_PIN); // set data pin of DHT sensor
-  if (UPDATE_INTERVAL <= dht.getMinimumSamplingPeriod()) {
-    Serial.println("Warning: UPDATE_INTERVAL is smaller than supported by the sensor!");
-  }
   // Sleep for the time of the minimum sampling period to give the sensor time to power up
   // (otherwise, timeout errors might occure for the first reading)
-  sleep(dht.getMinimumSamplingPeriod());
+  delay(2000);
 }
 
 
 void loop()      
 {  
-
-  // Force reading sensor, so it works also after sleep()
-  dht.readSensor(true);
+  delay(2000);
   // Get temperature from DHT library
-  float temperature = dht.getTemperature()-3;
+  float temperature = dht.readTemperature();
   if (isnan(temperature)) {
     Serial.println("Failed reading temperature from DHT!");
   } else if (temperature != lastTemp || nNoUpdatesTemp == FORCE_UPDATE_N_READS) {
@@ -86,24 +83,17 @@ void loop()
     // apply the offset before converting to something different than Celsius degrees
     temperature += SENSOR_TEMP_OFFSET;
 
-    if (!metric) {
-      temperature = dht.toFahrenheit(temperature);
-    }
     // Reset no updates counter
     nNoUpdatesTemp = 0;
     send(msgTemp.set(temperature, 1));
 
-    #ifdef MY_DEBUG
-    Serial.print("T: ");
-    Serial.println(temperature);
-    #endif
   } else {
     // Increase no update counter if the temperature stayed the same
     nNoUpdatesTemp++;
   }
 
   // Get humidity from DHT library
-  float humidity = dht.getHumidity();
+  float humidity = dht.readHumidity();
   if (isnan(humidity)) {
     Serial.println("Failed reading humidity from DHT");
   } else if (humidity != lastHum || nNoUpdatesHum == FORCE_UPDATE_N_READS) {
@@ -112,11 +102,6 @@ void loop()
     // Reset no updates counter
     nNoUpdatesHum = 0;
     send(msgHum.set(humidity, 1));
-
-    #ifdef MY_DEBUG
-    Serial.print("H: ");
-    Serial.println(humidity);
-    #endif
   } else {
     // Increase no update counter if the humidity stayed the same
     nNoUpdatesHum++;
